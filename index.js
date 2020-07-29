@@ -33,6 +33,3 @@ mongoose.connect(
 // set up routes
 
 app.use("/users", require("./routes/userRouter"));
-app.get('/*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'build', 'index.html'));
-});
