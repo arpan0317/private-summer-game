@@ -160,16 +160,6 @@ router.get("/", auth, async (req, res) => {
   });
 });
 
-router.get("/email", async (req, res) => {
-  const {email} = req.body;
-  const user = await User.findOne({ email: email});
-  res.json({
-    id: user._id,
-    user: user
-  });
-  console.log("User: " + user);
-  console.log("User_id: " + user._id);
-});
 
 
 
