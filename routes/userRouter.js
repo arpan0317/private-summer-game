@@ -161,7 +161,7 @@ router.get("/", auth, async (req, res) => {
 });
 
 router.get("/email", auth, async (req, res) => {
-  const user = await User.find({email: { req.email }});
+  const user = await User.find({email: req.email });
   res.json({
     id: user._id
   });
