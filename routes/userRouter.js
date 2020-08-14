@@ -4,24 +4,19 @@ const jwt = require("jsonwebtoken");
 const auth = require("../middleware/auth");
 const User = require("../models/userModel");
 
-
-
 router.post("/register", async (req, res) => {
   try {
     let {
       email,
       password,
       passwordCheck,
+      title,
       userName,
       firstName,
       lastName
     } = req.body;
 
-
-
     // validate
-
-
 
     if (
       !email ||
@@ -29,6 +24,7 @@ router.post("/register", async (req, res) => {
       !passwordCheck ||
       !firstName ||
       !lastName ||
+      !title ||
       !userName
     )
       return res.status(400).json({ msg: "Not all fields have been entered." });
@@ -50,17 +46,14 @@ router.post("/register", async (req, res) => {
         .status(400)
         .json({ msg: "An account with this email already exists." });
 
-
-
     const salt = await bcrypt.genSalt();
     const passwordHash = await bcrypt.hash(password, salt);
-
-
 
     const newUser = new User({
       email,
       password: passwordHash,
       userName,
+      title,
       firstName,
       lastName
     });
@@ -71,19 +64,13 @@ router.post("/register", async (req, res) => {
   }
 });
 
-
-
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
-
-
     // validate
     if (!email || !password)
       return res.status(400).json({ msg: "Not all fields have been entered." });
-
-
 
     const user = await User.findOne({ email: email });
     if (!user)
@@ -91,12 +78,8 @@ router.post("/login", async (req, res) => {
         .status(400)
         .json({ msg: "No account with this email has been registered." });
 
-
-
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ msg: "Invalid credentials." });
-
-
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
     res.json({
@@ -111,8 +94,6 @@ router.post("/login", async (req, res) => {
   }
 });
 
-
-
 router.delete("/delete", auth, async (req, res) => {
   try {
     const deletedUser = await User.findByIdAndDelete(req.user);
@@ -122,32 +103,22 @@ router.delete("/delete", auth, async (req, res) => {
   }
 });
 
-
-
 router.post("/tokenIsValid", async (req, res) => {
   try {
     const token = req.header("x-auth-token");
     if (!token) return res.json(false);
 
-
-
     const verified = jwt.verify(token, process.env.JWT_SECRET);
     if (!verified) return res.json(false);
 
-
-
     const user = await User.findById(verified.id);
     if (!user) return res.json(false);
-
-
 
     return res.json(true);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
-
-
 
 router.get("/", auth, async (req, res) => {
   const user = await User.findById(req.user);
@@ -156,7 +127,8 @@ router.get("/", auth, async (req, res) => {
     id: user._id,
     email: user.email,
     firstName: user.firstName,
-    lastName: user.lastName
+    lastName: user.lastName,
+    title: user.title
   });
 });
 
