@@ -13,7 +13,7 @@ app.use(cors());
 app.use(express.static(path.join(__dirname, 'build')));
 
 
-app.listen(process.env.PORT, () => console.log(`The server has started on port: ${PORT}`));
+app.listen(process.env.PORT || 3000, () => console.log(`The server has started on port: ${process.env.PORT}`));
 
 
 
