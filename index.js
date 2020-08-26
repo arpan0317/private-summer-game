@@ -10,6 +10,10 @@ require("dotenv").config();
 const app = express();
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'build')));
+app.use(function (req, res, next) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  next();
+});
 
 
 app.listen(process.env.PORT || 3000, () => console.log(`The server has started on port: ${process.env.PORT}`));
